@@ -18,17 +18,22 @@ class css_heartbeat_monitor {
 	}
 
 	public static function heartbeat_footer_js() {
-		if (false === wp_script_is('heartbeat')) return;
+		if (false === wp_script_is('heartbeat')) { echo '<script>console.log("\n\n *** NO HEARTBEAT *** \n\n");</script>'; return; }
+		echo '<script>console.log("\n\n*** HEARTBEAT MONITOR CONNECTED ***\n\n");</script>';
 		?>
 
 		<script>
+			var heartbeat_count = 0;
 			(function($) {
 				var time	= new Date(),
 					hours	= 0,
 					mins	= 0,
 					secs	= 0,
 					mils	= 0;
+
 				$(document).on('heartbeat-send',function(e,data) {
+					heartbeat_count++;
+
 					time 	= new Date();
 					hours	= time.getHours();
 					mins 	= time.getMinutes();
@@ -42,7 +47,8 @@ class css_heartbeat_monitor {
 					else if (100 > mils)
 									mils	= '0' + mils;
 
-					console.log("\n" + 'LUB ' + hours + ':' + mins + ':' + secs + '.' + mils);
+					console.log("\nPULSE:\t" + wp.heartbeat.interval() + "s");
+					console.log("HB " + heartbeat_count + ':' + "\t" + 'LUB ' + hours + ':' + mins + ':' + secs + '.' + mils);
 					$("#wpadminbar").animate({backgroundColor: "#990000"},200);
 				});
 				$(document).on('heartbeat-tick',function(e,data) {
@@ -59,7 +65,7 @@ class css_heartbeat_monitor {
 					else if (100 > mils)
 									mils	= '0' + mils;
 
-					console.log('DUB ' + hours + ':' + mins + ':' + secs + '.' + mils + "\n");
+					console.log("\t\t" + 'DUB ' + hours + ':' + mins + ':' + secs + '.' + mils);
 					$("#wpadminbar").animate({backgroundColor: "#222"},200);
 				});
 			}(jQuery));
