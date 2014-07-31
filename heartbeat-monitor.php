@@ -3,7 +3,7 @@
 Plugin Name: Heartbeat Monitor
 Plugin URI: http://www.calebstauffer.com
 Description: Visual notification of the WordPress Hearbeat
-Version: 0.0.1
+Version: 0.0.2
 Author: Caleb Stauffer
 Author URI: http://www.calebstauffer.com
 */
@@ -20,9 +20,8 @@ class css_heartbeat_monitor {
 
 	public static function heartbeat_send() {
 		//global $wp_filter; echo '<pre>' . print_r($wp_filter['heartbeat_received'],true) . '</pre>';
-		$console = '\n\n*** HEARTBEAT MONITOR: ';
-		if (false === wp_script_is('heartbeat')) { echo '<script>console.log("' . $console . 'NO HEARTBEAT DETECTED ***\n\n");</script>'; return; }
-		echo '<script>console.log("' . $console . 'IT\'S ALIVE! ***\n\n");</script>';
+		if (false === wp_script_is('heartbeat')) { echo '<script>console.log("\n\n-√\\,- HEARTBEAT MONITOR: NO HEARTBEAT DETECTED\n\n");</script>'; return; }
+		echo '<script>console.log("\n\n-√`- HEARTBEAT MONITOR: IT\'S ALIVE!\n\n");</script>';
 		?>
 
 		<script>
@@ -46,29 +45,30 @@ class css_heartbeat_monitor {
 				else if (100 > mils)
 								mils	= '0' + mils;
 
-				console.log(pre + hours + ':' + mins + ':' + secs + '.' + mils + suf);
+				console.log('-√`- ' + pre + ' ' + hours + ':' + mins + ':' + secs + '.' + mils + suf);
 			}
 
 			(function($) {
 
 				$(document).on('heartbeat-send',function(e,data) {
 					heartbeat_count++;
-
-					console.log("HB: " + heartbeat_count);
-					console.log("PULSE: " + wp.heartbeat.interval() + "s");
-					HBMonitor_time("LUB\t","\n---√---");
+					console.log('');
+					console.log("-√`- HB: " + heartbeat_count);
+					console.log("-√`- PULSE: " + wp.heartbeat.interval() + "s");
+					HBMonitor_time("LUB");
+					console.log('');
 					$("#wpadminbar").animate({backgroundColor: "#990000"},200);
 				});
 
 				$(document).on('heartbeat-connection-lost',function(e,data) {
-					console.log('*** V-FIB! ***');
+					HBMonitor_time('NO HEART BEAT!');
 					heartbeat_shocking = setInterval(function() {
-						console.log('*** CLEAR! ***');
+						HBMonitor_time('CLEAR! *SHOCK*');
 					},12000);
 				});
 
 				$(document).on('heartbeat-connection-restored',function(e,data) {
-					console.log('*** NORMAL SINUS RHYTHYM ***');
+					HBMonitor_time('NORMAL HEARTBEAT');
 					clearInterval(heartbeat_shocking);
 				});
 
@@ -84,7 +84,9 @@ class css_heartbeat_monitor {
 		<script>
 			(function($) {
 				$(document).on('heartbeat-tick',function(e,data) {
-					HBMonitor_time("---√---\nDUB\t","\n");
+					console.log('');
+					HBMonitor_time("DUB");
+					console.log('');
 					$("#wpadminbar").animate({backgroundColor: "#222"},200);
 				});
 			}(jQuery));
