@@ -8,8 +8,8 @@ Author: Caleb Stauffer
 Author URI: http://www.calebstauffer.com
 */
 
-if (!is_admin()) return;
-new css_heartbeat_monitor;
+if (is_admin())
+	new css_heartbeat_monitor;
 
 class css_heartbeat_monitor {
 
@@ -19,57 +19,121 @@ class css_heartbeat_monitor {
 	}
 
 	public static function heartbeat_send() {
-		//global $wp_filter; echo '<pre>' . print_r($wp_filter['heartbeat_received'],true) . '</pre>';
-		if (false === wp_script_is('heartbeat')) { echo '<script>console.log("\n\n-√\\,- HEARTBEAT MONITOR: NO HEARTBEAT DETECTED\n\n");</script>'; return; }
-		echo '<script>console.log("\n\n-√`- HEARTBEAT MONITOR: IT\'S ALIVE!\n\n");</script>';
+		if (false === wp_script_is('heartbeat')) { echo '<script>console.log("\n\n-√`- HEARTBEAT MONITOR: NO HEARTBEAT DETECTED\n\n");</script>'; return; }
+		echo '<script>jQuery("#post-preview").hide();console.log("\n\n-√`- HEARTBEAT MONITOR: IT\'S ALIVE!\n-√`- PULSE: " + (60 / wp.heartbeat.interval()) + "bpm\n\n");</script>';
 		?>
+
+		<style>
+			#wpadminbar { transition: 0.2s background ease; }
+
+				#wpadminbar.heartbeat-lub { background-color: #990000 }
+
+				@-webkit-keyframes heartbeatirregular {
+					0%   { background-color: #990000; }
+					20%  { background-color: #222; }
+					80%  { background-color: #222; }
+					100% { background-color: #990000; }
+				}
+				@-moz-keyframes heartbeatirregular {
+					0%   { background-color: #990000; }
+					20%  { background-color: #222; }
+					80%  { background-color: #222; }
+					100% { background-color: #990000; }
+				}
+				@-ms-keyframes heartbeatirregular {
+					0%   { background-color: #990000; }
+					20%  { background-color: #222; }
+					80%  { background-color: #222; }
+					100% { background-color: #990000; }
+				}
+				#wpadminbar.heartbeat-irregular {
+					-webkit-animation: heartbeatirregular 2s infinite;
+					-moz-animation:    heartbeatirregular 2s infinite;
+					-ms-animation:     heartbeatirregular 2s infinite;
+				}
+
+				@-webkit-keyframes heartbeatshock {
+					0%   { background-color: #FFF; }
+					2%   { background-color: #FFF; }
+					3%   { background-color: #222; }
+					100% { background-color: #222; }
+				}
+				@-moz-keyframes heartbeatshock {
+					0%   { background-color: #FFF; }
+					2%   { background-color: #FFF; }
+					3%   { background-color: #222; }
+					100% { background-color: #222; }
+				}
+				@-ms-keyframes heartbeatshock {
+					0%   { background-color: #FFF; }
+					2%   { background-color: #FFF; }
+					3%   { background-color: #222; }
+					100% { background-color: #222; }
+				}
+				#wpadminbar.heartbeat-shock {
+					-webkit-animation: heartbeatshock 12s infinite;
+					-moz-animation:    heartbeatshock 12s infinite;
+					-ms-animation:     heartbeatshock 12s infinite;
+				}
+
+			#wp-toolbar > ul > li { background-color: rgba(34,34,34,0.8); }
+		</style>
 
 		<script>
 			var heartbeat_count = 0,
-				heartbeat_shocking = false;
+				hbmonitor_count = 0;
 
-			function HBMonitor_time(pre,suf) {
+			function HBMonitor(pre,suf) {
+				hbmonitor_count++;
 				pre = typeof pre !== 'undefined' ? pre : '';
 				suf = typeof suf !== 'undefined' ? suf : '';
 
-				var date 	= new Date();
-				var hours	= date.getHours();
-				var mins 	= date.getMinutes();
-				var secs	= date.getSeconds();
-				var mils 	= date.getMilliseconds();
+				if (1 === hbmonitor_count)
+					console.log('');
 
-				if (10 > hours) hours	= '0' + hours;
-				if (10 > mins)	mins	= '0' + mins;
-				if (10 > secs)	secs	= '0' + secs;
-				if (10 > mils) 	mils 	= '00' + mils;
-				else if (100 > mils)
-								mils	= '0' + mils;
+				if ('object' === typeof suf) {
+					console.log('-√`- ' + pre + ':');
+					console.log(suf);
+				} else
+					console.log('-√`- ' + pre + ' ' + suf);
 
-				console.log('-√`- ' + pre + ' ' + hours + ':' + mins + ':' + secs + '.' + mils + suf);
+				console.log('');
+
 			}
 
 			(function($) {
 
 				$(document).on('heartbeat-send',function(e,data) {
+					$("#wpadminbar").removeClass('hearbeat-irregular');
 					heartbeat_count++;
+					hbmonitor_count = 0;
+					data['heartbeat_monitor'] = heartbeat_count;
 					console.log('');
-					console.log("-√`- HB: " + heartbeat_count);
-					console.log("-√`- PULSE: " + wp.heartbeat.interval() + "s");
-					HBMonitor_time("LUB");
-					console.log('');
-					$("#wpadminbar").animate({backgroundColor: "#990000"},200);
+					console.log("-√`- HB: " + heartbeat_count + ", PULSE: " + (60 / wp.heartbeat.interval()) + "bpm");
+					console.log("-√`- LUB");
+					$("#wpadminbar").addClass('heartbeat-lub');
 				});
 
 				$(document).on('heartbeat-connection-lost',function(e,data) {
-					HBMonitor_time('NO HEART BEAT!');
+					console.log("-√`- NO HEART BEAT!");
+					$("#wpadminbar").addClass('heartbeat-shock');
 					heartbeat_shocking = setInterval(function() {
-						HBMonitor_time('CLEAR! *SHOCK*');
+						console.log("-√`- CLEAR! *SHOCK*");
 					},12000);
 				});
 
 				$(document).on('heartbeat-connection-restored',function(e,data) {
-					HBMonitor_time('NORMAL HEARTBEAT');
-					clearInterval(heartbeat_shocking);
+					$("#wpadminbar").removeClass('heartbeat-shock');
+					console.log("-√`- NORMAL HEARTBEAT");
+				});
+
+				$(document).on('heartbeat-error',function(jqXHR, textStatus, error) {
+					$("#wpadminbar").addClass('heartbeat-irregular');
+					console.log("-√`- IRREGULAR HEARTBEAT!");
+					console.log(jqXHR);
+					console.log(textStatus);
+					console.log(error);
+					console.log('');
 				});
 
 			}(jQuery));
@@ -84,10 +148,10 @@ class css_heartbeat_monitor {
 		<script>
 			(function($) {
 				$(document).on('heartbeat-tick',function(e,data) {
+					hbmonitor_count = 0;
+					console.log("-√`- DUB\n");
 					console.log('');
-					HBMonitor_time("DUB");
-					console.log('');
-					$("#wpadminbar").animate({backgroundColor: "#222"},200);
+					$("#wpadminbar").removeClass('heartbeat-lub');
 				});
 			}(jQuery));
 		</script>
