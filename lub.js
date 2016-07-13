@@ -1,6 +1,9 @@
 var heartbeat_count = 0,
     hbmonitor_count = 0;
 
+if ('function' === typeof hbmonitor_lazy_lub)
+    heartbeat_count = 1;
+
 function HBMonitor(pre,suf,extra,exxtra,exxxtra,console_time_label) {
     hbmonitor_count++;
     pre = typeof pre !== 'undefined' ? pre : '';
