@@ -56,8 +56,8 @@ class css_heartbeat_monitor {
 			self::no_heartbeat_detected();
 			return;
 		} else if (false === self::$alive) {
-			global $wp_scripts;
-			$wp_scripts->print_scripts('heartbeat-monitor');
+			global $wp_styles;
+			echo '<link rel="stylesheet" href="' . $wp_styles->registered['heartbeat-monitor']->src . '?ver=' . $wp_styles->registered['heartbeat-monitor']->ver . '" type="text/css" />';
 			self::$alive = true;
 		}
 
