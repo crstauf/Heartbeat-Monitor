@@ -29,7 +29,12 @@ class css_heartbeat_monitor {
 
 		global $wp_current_filter,$wp_scripts;
 		$current_filter = $wp_current_filter[0];
-		if (false === array_search('heartbeat-monitor-lub',$wp_scripts->registered['heartbeat']->deps))
+		if (
+			isset($wp_scripts) && isset($wp_scripts->registered) &&
+			is_array($wp_scripts->registered) && count($wp_scripts->registered) && 
+			array_key_exists('heartbeat',$wp_scripts->registered) &&
+			false === array_search('heartbeat-monitor-lub',$wp_scripts->registered['heartbeat']->deps)
+		)
 			$wp_scripts->registered['heartbeat']->deps[] = 'heartbeat-monitor-lub';
 	}
 
