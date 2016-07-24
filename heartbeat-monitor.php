@@ -90,7 +90,10 @@ class css_heartbeat_monitor {
 	}
 
 	public static function css() {
-		list($scheme) = get_user_meta(get_current_user_id(),'admin_color');
+		list($scheme) = is_admin()
+			? get_user_meta(get_current_user_id(),'admin_color')
+			: array('fresh');
+
 		$colors = array(
 			'fresh'     => 'rgba(35, 40, 45, 1.0)',
 			'light'     => 'rgba(229, 229, 229, 1.0)',
