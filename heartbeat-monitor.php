@@ -30,6 +30,10 @@ class css_heartbeat_monitor {
 		global $wp_current_filter,$wp_scripts;
 		$current_filter = $wp_current_filter[0];
 
+		wp_register_script('heartbeat-monitor-lub',plugin_dir_url(__FILE__) . 'lub.js',array('jquery'),'0.0.3');
+		wp_register_script('heartbeat-monitor-dub',plugin_dir_url(__FILE__) . 'dub.js',array('jquery','heartbeat','heartbeat-monitor-lub'),'0.0.3');
+		wp_register_script('heartbeat-monitor-nobeat',plugin_dir_url(__FILE__) . 'nobeat.js',array('jquery'),'0.0.3');
+
 		if (
 			isset($wp_scripts) && isset($wp_scripts->registered) &&
 			is_array($wp_scripts->registered) && count($wp_scripts->registered) &&
@@ -45,10 +49,6 @@ class css_heartbeat_monitor {
 			console.log("PULSE: " + (60 / window.wp.heartbeat.interval()) + "bpm");
 			console.groupEnd();'
 		);
-
-		wp_register_script('heartbeat-monitor-lub',plugin_dir_url(__FILE__) . 'lub.js',array('jquery'),'0.0.3');
-		wp_register_script('heartbeat-monitor-dub',plugin_dir_url(__FILE__) . 'dub.js',array('jquery','heartbeat','heartbeat-monitor-lub'),'0.0.3');
-		wp_register_script('heartbeat-monitor-nobeat',plugin_dir_url(__FILE__) . 'nobeat.js',array('jquery'),'0.0.3');
 
 		if (false === wp_script_is('heartbeat')) return;
 
