@@ -8,6 +8,11 @@ var hbmonitor_lazy_lub = function(e,data) {
     console.groupCollapsed("-√`- LUB");
     console.log("HEARTBEAT: 1");
     console.log("PULSE: " + (60 / wp.heartbeat.interval()) + "bpm");
+    if ($("#qm-heartbeatmonitor").length) {
+        $("#qm-heartbeatmonitor .beat-count").text(1);
+        var d = new Date();
+        $("#qm-heartbeatmonitor .beat-timestamps").prepend('<li>' + d.getHours() + ':' + (10 > d.getMinutes() ? '0' : '') + d.getMinutes() + ':' + (10 > d.getSeconds() ? '0' : '') + d.getSeconds() + ' </li>');
+    }
     jQuery("#wpadminbar").addClass('heartbeat-lub');
     jQuery(document).unbind('heartbeat-send',hbmonitor_lazy_lub);
 };

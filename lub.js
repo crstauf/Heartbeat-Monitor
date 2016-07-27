@@ -38,6 +38,14 @@ function HBMonitor(pre,suf,extra,exxtra,exxxtra,console_time_label) {
     $(document).on('heartbeat-send',function(e,data) {
         $("#wpadminbar").removeClass('hearbeat-irregular');
         heartbeat_count++;
+        if ($("#qm-heartbeatmonitor").length) {
+            $("#qm-heartbeatmonitor .beat-count").text(heartbeat_count);
+            var d = new Date();
+            $("#qm-heartbeatmonitor .beat-timestamps").prepend('<li>' + d.getHours() + ':' + (10 > d.getMinutes() ? '0' : '') + d.getMinutes() + ':' + (10 > d.getSeconds() ? '0' : '') + d.getSeconds() + ' </li>');
+            if ($("#qm-heartbeatmonitor .beat-timestamps > li").length > 5)
+                for (var i = 5; i < $("#qm-heartbeatmonitor .beat-timestamps > li").length; i++)
+                    $("#qm-heartbeatmonitor .beat-timestamps > li").eq(i).remove();
+        }
         hbmonitor_count = 0;
         data['heartbeat_monitor'] = heartbeat_count;
         console.time('LUB -> DUB');

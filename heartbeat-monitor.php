@@ -3,7 +3,7 @@
 Plugin Name: Heartbeat Monitor
 Plugin URI: http://develop.calebstauffer.com
 Description: Visual notification of the WordPress Hearbeat
-Version: 0.0.3
+Version: 0.0.4
 Author: Caleb Stauffer
 Author URI: http://develop.calebstauffer.com
 */
@@ -13,6 +13,10 @@ if (!defined('ABSPATH') || !function_exists('add_filter')) {
 	header( 'HTTP/1.1 403 Forbidden' );
 	exit();
 }
+
+add_filter('qm/collectors',array('css_heartbeat_monitor','action_qm_collectors'),0);
+add_filter('qm/outputter/html',array('css_heartbeat_monitor','include_qm_outputter'),0);
+add_filter('qm/outputter/html','register_cssllc_heartbeatmonitor_output_html',81,2);
 
 if (!defined('DOING_AJAX') || !DOING_AJAX)
 	add_action('init',array('css_heartbeat_monitor','action_init'));
@@ -41,6 +45,16 @@ class css_heartbeat_monitor {
 			false === array_search('heartbeat-monitor-lub',$wp_scripts->registered['heartbeat']->deps)
 		)
 			$wp_scripts->registered['heartbeat']->deps[] = 'heartbeat-monitor-lub';
+	}
+
+	public static function action_qm_collectors(array $collectors) {
+		require_once(dirname(__FILE__) . '/qm/collector.php');
+		return $collectors;
+	}
+
+	public static function include_qm_outputter(array $output) {
+		require_once(dirname(__FILE__) . '/qm/output.php');
+		return $output;
 	}
 
 	public static function action_enqueue_scripts() {
@@ -155,13 +169,29 @@ class css_heartbeat_monitor {
 				100% { background-color: <?php echo $colors[$scheme] ?>; }
 			}
 
+			#qm-heartbeatmonitor ul.beat-timestamps {
+				display: inline;
+				margin: 0 !important;
+				padding: 0 !important;
+				list-style: none;
+			}
+
+			#qm-heartbeatmonitor ul.beat-timestamps > li { display: inline; }
+
+				#qm-heartbeatmonitor ul.beat-timestamps > li:nth-child(n + 2) { opacity: 0.8; }
+				#qm-heartbeatmonitor ul.beat-timestamps > li:nth-child(n + 3) { opacity: 0.6; }
+				#qm-heartbeatmonitor ul.beat-timestamps > li:nth-child(n + 4) { opacity: 0.4; }
+				#qm-heartbeatmonitor ul.beat-timestamps > li:nth-child(n + 5) { opacity: 0.2; }
+				#qm-heartbeatmonitor ul.beat-timestamps > li:nth-child(n + 6) { display: none; }
+
 			#wpadminbar.heartbeat-shock {
 				-webkit-animation: heartbeatshock 12s infinite;
 				   -moz-animation: heartbeatshock 12s infinite;
 				    -ms-animation: heartbeatshock 12s infinite;
 			}
 
-			#wp-toolbar ul.ab-top-menu > li { background-color: <?php echo str_replace('1.0','0.9',$colors[$scheme]) ?>; }
+			#wp-toolbar ul.ab-top-menu > li:not(#wp-admin-bar-query-monitor),
+			#wp-toolbar ul.ab-top-menu > li#wp-admin-bar-query-monitor.qm-all-clear { background-color: <?php echo str_replace('1.0','0.9',$colors[$scheme]) ?>; }
 
 		</style>
 
