@@ -39,8 +39,6 @@ class CSSLLC_HeartbeatMonitor_Collector extends QM_Collector {
 		$this->data['parts'] = array_unique( array_filter( $all_parts ) );
 		$this->data['components'] = array_unique( array_filter( $components ) );
 
-        print_r($this->data);
-
 	}
 
 	protected function process_action( $name, array $wp_filter ) {
@@ -59,10 +57,6 @@ class CSSLLC_HeartbeatMonitor_Collector extends QM_Collector {
 					$callback = QM_Util::populate_callback( $callback );
 
 					if ( isset( $callback['component'] ) ) {
-						if ( $this->hide_qm and ( 'query-monitor' === $callback['component']->context ) ) {
-							continue;
-						}
-
 						$components[$callback['component']->name] = $callback['component']->name;
 					}
 
