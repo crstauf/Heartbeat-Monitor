@@ -25,7 +25,7 @@ class CSSLLC_HeartbeatMonitor_Output_Html extends QM_Output_Html {
                     '<tr><th colspan="3">Heartbeat Monitor</th></tr>' .
                     '<tr>' .
                         '<th colspan="3">Action' .
-                            $this->build_filter( 'component', $data['components'], 'subject' ) .
+                            $this->build_filter( 'component', $data['components'], '', 'subject' ) .
                         '</th>' .
                     '</tr>' .
                 '</thead>' .
